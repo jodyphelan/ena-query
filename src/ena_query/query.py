@@ -54,17 +54,21 @@ def get_ena_country(wgs_id: str) -> Optional[str]:
 
     url = f'https://www.ebi.ac.uk/ena/browser/api/xml/{sample_accession}'
     response = requests.get(url)
+    if response.status_code == 400:
+        raise ValueError(f'No data found on ENA for {wgs_id}')
     root = ET.fromstring(response.text)
 
     for sattr in root.findall('.//SAMPLE_ATTRIBUTE'):
-        if sattr[0].text == 'geographic location (country and/or sea)':
+        if sattr[0].text in ('geographic location (country and/or sea)','geo_loc_name'):
             return {
                 'accession':sample_accession,
+                'country':sattr[1].text,
                 'iso3':country2iso3(sattr[1].text)
             }
     
     return {
         'accession':sample_accession,
+        'country':None,
         'iso3':None
     }
 
