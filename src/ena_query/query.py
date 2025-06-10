@@ -1,4 +1,6 @@
 import requests
+import csv
+from io import StringIO
 import xml.etree.ElementTree as ET
 from typing import Optional
 from .country import country2iso3
@@ -18,16 +20,10 @@ def get_sample_accession(wgs_id: str) -> str:
         The sample accession ID
     """
     if 'RR' in wgs_id:
-        url = f'https://www.ebi.ac.uk/ena/browser/api/xml/{wgs_id}'
+        url = f'https://www.ebi.ac.uk/ena/portal/api/search?result=read_run&query=run_accession={wgs_id}&fields=sample_accession'
         response = requests.get(url)
-        root = ET.fromstring(response.text)
-        # find tag: DB
-        sample_accession = None
-        for xref in root.findall('.//XREF_LINK'):
-            pass
-            if xref[0].text=='ENA-SAMPLE':
-                sample_accession = xref[1].text
-                break
+        for row in csv.DictReader(StringIO(response.text), delimiter='\t'):
+            sample_accession = row.get('sample_accession')
     else:
         sample_accession = wgs_id
 
