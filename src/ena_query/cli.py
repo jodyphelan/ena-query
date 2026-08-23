@@ -1,29 +1,29 @@
-from .country import country2iso3
-from .query import get_ena_country
+import json
+from .query import get_ena_metadata
 import argparse
+import logging
 
-def get_accestion_country(args: argparse.Namespace) -> None:
+def run_query(args: argparse.Namespace) -> None:
     """
-    Get the country of origin for a given ENA accession.
+    Get the metadata for a given ENA accession.
     """
 
-    country = get_ena_country(args.accession)
+    metadata = get_ena_metadata(args.accession)
 
-    # If the country is not found, return None
-    if country is None:
-        print("Country not found")
+    if metadata is None:
+        logging.error(f"No metadata found for accession {args.accession}")
+        return
 
-    # Return the country
-    print(country)
+    print(json.dumps(metadata, indent=4))
 
 
 def main():
     argparser = argparse.ArgumentParser()
     subparsers = argparser.add_subparsers(dest='command')
 
-    subparser = subparsers.add_parser('country', help='Get the country of origin for a given ENA accession.')
+    subparser = subparsers.add_parser('metadata', help='Get the metadata for a given ENA accession.')
     subparser.add_argument('accession', help='The ENA accession ID.')
-    subparser.set_defaults(func=get_accestion_country)
+    subparser.set_defaults(func=run_query)
 
     args = argparser.parse_args()
 

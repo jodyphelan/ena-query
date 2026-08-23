@@ -8,6 +8,10 @@ authors = [{name = "Jody Phelan", email = "jody.phelan@lshtm.ac.uk"}]
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
+dependencies = [
+    "requests",
+    "toml",
+]
 
 [project.scripts]
 ena-query = "ena_query:cli.main"
